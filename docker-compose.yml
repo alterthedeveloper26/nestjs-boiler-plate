@@ -1,0 +1,18 @@
+version: '3'
+services:
+  ac-implement-boiler-plate-pg:
+    image: postgis/postgis
+    ports:
+      - 6060:5432
+    volumes:
+      #named volume
+      #specify the location data store in the container but not in local machine
+      #the location is usually default data storage location of the database
+      - ac-implement-boiler-plate-pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: alter
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: ac-implement-boiler-plate-database
+volumes:
+  ac-implement-boiler-plate-pgdata:
+    driver: local
