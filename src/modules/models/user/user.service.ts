@@ -1,29 +1,56 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './model/user.entity';
-import { faker } from '@faker-js/faker';
+import { Repository } from 'typeorm';
+import { UserServiceErrorMessage } from '~common/constants/message/user-service-message.constant';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    protected readonly userRepo: Repository<User>,
+    private readonly userRepo: Repository<User>,
   ) {}
 
-  async createUser() {
-    let i = 1;
-    while (i <= 5) {
-      const user = new User();
-      user.name = faker.animal.cat();
-      user.username =
-        user.name.replace(' ', '') + Math.ceil(100 * Math.random());
-      user.password = faker.random.word();
-      await this.userRepo.save(user);
-    }
+  create(createUserDto: CreateUserDto) {
+    return this.userRepo.save(createUserDto);
+  }
 
-    return {
-      message: 'success!',
-    };
+  findAll() {
+    return this.userRepo.find();
+  }
+
+  async findOneThrowIfNotFound(id: string) {
+    const user = await this.userRepo.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!user)
+      throw new NotFoundException(UserServiceErrorMessage.UserNotFound);
+
+    return user;
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.findOneThrowIfNotFound(id);
+    return await this.userRepo.save({ ...user, updateUserDto });
+  }
+
+  async delete(id: string) {
+    const user = await this.findOneThrowIfNotFound(id);
+    return await this.userRepo.delete({ id });
+  }
+
+  async softDelete(id: string) {
+    const user = await this.findOneThrowIfNotFound(id);
+    return await this.userRepo.delete({ id });
+  }
+
+  async restore(id: string) {
+    const user = await this.findOneThrowIfNotFound(id);
+    return await this.userRepo.restore({ id });
   }
 }
