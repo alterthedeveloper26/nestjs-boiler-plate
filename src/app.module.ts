@@ -12,10 +12,10 @@ import { HealthModule } from './modules/health/health.module';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ExceptionsFilter } from '~common/filters/exception.filter';
 import { LoggingInterceptor } from '~common/interceptors/logging.interceptor';
-import { TransformInterceptor } from '~common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '~common/interceptors/format-http-response.interceptor';
 import { loggerOptions } from './config/logger.config';
-import { RoleModule } from '~models/role/role.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AsyncLocalStorageModule } from '~shared/async-local-storage/async-local-storage.module';
 
 @Module({
   imports: [
@@ -30,6 +30,7 @@ import { AuthModule } from './modules/auth/auth.module';
     LoggerModule,
     HealthModule,
     AuthModule,
+    AsyncLocalStorageModule,
   ],
   providers: [
     {

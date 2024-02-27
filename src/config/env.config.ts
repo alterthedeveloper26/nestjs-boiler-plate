@@ -1,4 +1,4 @@
-import { STAGING } from '~common/constants/environments';
+import { STAGING } from '~common/constants/system';
 
 export default () => ({
   dbConfig: {

@@ -2,11 +2,11 @@ import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PRODUCTION } from '~common/constants/environments';
+import { PRODUCTION } from '~common/constants/system';
 import { ExceptionsFilter } from '~common/filters/exception.filter';
 import { LoggingInterceptor } from '~common/interceptors/logging.interceptor';
 import { NewrelicInterceptor } from '~common/interceptors/newrelic.interceptor';
-import { TransformInterceptor } from '~common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '~common/interceptors/format-http-response.interceptor';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -34,7 +34,7 @@ async function bootstrap() {
           bearerFormat: 'JWT',
           in: 'header',
         },
-        'jwt',
+        'jwt'
       )
       .build();
 
@@ -44,7 +44,7 @@ async function bootstrap() {
 
   await app.listen(serverConfig.port);
   Logger.log(
-    `🚀 Application is running on: http://localhost:${serverConfig.port}`,
+    `🚀 Application is running on: http://localhost:${serverConfig.port}`
   );
 }
 bootstrap();

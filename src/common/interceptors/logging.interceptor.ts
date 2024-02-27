@@ -5,23 +5,24 @@ import { tap } from 'rxjs/operators';
 import {
   CallHandler,
   ExecutionContext,
+  Inject,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 
-import { LoggerService } from '~shared/logger/logger.service';
-import { CORRELATION_ID_HEADER } from '~common/constants/environments';
 import { v4 } from 'uuid';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
+import { CORRELATION_ID_HEADER } from '~common/constants/system';
+import appConfig from '~/config/app.config';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
   constructor(
-    protected readonly loggerService: LoggerService,
-    protected readonly configService: ConfigService,
+    @Inject(appConfig.KEY)
+    private appConfiguration: ConfigType<typeof appConfig>
   ) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.switchToHttp().getRequest();
 
@@ -29,31 +30,27 @@ export class LoggingInterceptor implements NestInterceptor {
     const requestPath = `${req.method} ${req.url}`;
     const requestInfo = {
       correlationId: req.headers[CORRELATION_ID_HEADER] ?? v4(),
-      serviceName: this.configService.get<'string'>('serviceName'),
+      serviceName: this.appConfiguration.serviceName,
       fromIp: req.ip,
       method: req.method,
       receivedAt,
     };
 
     req.requestInfo = requestInfo;
-    this.loggerService.info(
-      context,
-      `Attempting to call API - ${requestPath}`,
-      {
-        hostName: hostname(),
-        requestInfo,
-        ...req.body,
-      },
-    );
+    Logger.log(`Attempting to call API - ${requestPath}`, {
+      hostName: hostname(),
+      requestInfo,
+      ...req.body,
+    });
 
     return next.handle().pipe(
       tap(() => {
         const responseAt = new Date().getTime();
-        this.loggerService.requestInfo(context, requestPath, {
+        Logger.log(requestPath, {
           ...requestInfo,
           durations: responseAt - receivedAt,
         });
-      }),
+      })
     );
   }
 }

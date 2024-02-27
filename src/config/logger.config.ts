@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { LoggerOptions, transports } from 'winston';
 import { SyslogTransportOptions } from 'winston-syslog';
-import { PRODUCTION } from '~common/constants/environments';
+import { PRODUCTION } from '~common/constants/system';
 
 // export const options: SyslogTransportOptions = {
 //   protocol: 'tls4',

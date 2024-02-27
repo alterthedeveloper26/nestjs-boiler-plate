@@ -1,20 +1,20 @@
+import { Controller, Get } from '@nestjs/common';
 import {
-  Controller,
-  ForbiddenException,
-  Get,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
-
-import { ApiResponseModel } from '~base/base.response';
+  HealthCheck,
+  HealthCheckService,
+  TypeOrmHealthIndicator,
+} from '@nestjs/terminus';
 
 @Controller('health')
 export class HealthController {
+  constructor(
+    private health: HealthCheckService,
+    private db: TypeOrmHealthIndicator
+  ) {}
+
+  @HealthCheck()
   @Get()
-  healthCheck(): ApiResponseModel {
-    throw new Error('Kissing ass');
-    return {
-      success: true,
-    };
+  healthCheck() {
+    return this.health.check([() => this.db.pingCheck('database')]);
   }
 }
