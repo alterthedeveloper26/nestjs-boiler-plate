@@ -1,6 +1,4 @@
-import pick from 'lodash.pick';
-import isMatch from 'lodash.ismatch';
-import uniqWith from 'lodash.uniqwith';
+import { pick, isMatch, uniqWith } from 'lodash';
 
 export function removeDuplicatedObject<T>(
   objects: T[],

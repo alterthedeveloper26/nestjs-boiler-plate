@@ -3,9 +3,10 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  HttpStatus,
+  HttpStatus
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+import { ClsService } from 'nestjs-cls';
 
 import { ApiResponseModel } from '~base/base.response';
 import { PostgresErrorCodeEnum } from '~common/constants/database';
@@ -13,9 +14,8 @@ import {
   DATA_LOCKED_ERR,
   FORBIDDEN_REQUEST,
   INTERNAL_SERVER_ERR,
-  UNAUTHORIZED,
+  UNAUTHORIZED
 } from '~common/constants/messages';
-import { getCorrelationId } from '~common/utils/get-correlation-id.utils';
 import { LoggerService } from '~shared/logger/logger.service';
 
 interface CustomPostgresError extends Error {
@@ -27,6 +27,7 @@ export class ExceptionsFilter implements ExceptionFilter {
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
     private readonly loggerService: LoggerService,
+    private readonly clsService: ClsService
   ) {}
 
   catch(exception: CustomPostgresError, host: ArgumentsHost): void {
@@ -36,7 +37,7 @@ export class ExceptionsFilter implements ExceptionFilter {
 
     const ctx = host.switchToHttp();
     const req = ctx.getRequest();
-    const correlationId = getCorrelationId(host) || 'e001';
+    const correlationId = this.clsService.getId() || 'e001';
 
     const httpStatus =
       exception instanceof HttpException
@@ -45,26 +46,13 @@ export class ExceptionsFilter implements ExceptionFilter {
 
     const responseBody: Partial<ApiResponseModel> = {
       success: false,
-      correlationId,
+      correlationId
     };
 
     if (exception instanceof HttpException) {
       const responseData = exception.getResponse() as ApiResponseModel;
       responseBody.result = responseData.result;
-
-      switch (httpStatus) {
-        case HttpStatus.UNAUTHORIZED:
-          responseBody.message = UNAUTHORIZED;
-          break;
-
-        case HttpStatus.FORBIDDEN:
-          responseBody.message = FORBIDDEN_REQUEST;
-          break;
-
-        default:
-          responseBody.message = responseData.message;
-          break;
-      }
+      responseBody.message = responseData.message;
     } else {
       responseBody.message = INTERNAL_SERVER_ERR;
 
@@ -81,8 +69,8 @@ export class ExceptionsFilter implements ExceptionFilter {
       JSON.stringify(responseBody.message),
       exception,
       {
-        ...responseBody,
-      },
+        ...responseBody
+      }
     );
 
     const requestInfo = req.requestInfo;
@@ -91,7 +79,7 @@ export class ExceptionsFilter implements ExceptionFilter {
 
       this.loggerService.requestInfo(host, requestPath, {
         ...requestInfo,
-        durations: new Date().getTime() - requestInfo.receivedAt,
+        durations: new Date().getTime() - requestInfo.receivedAt
       });
     }
 

@@ -1,15 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Brackets, DataSource, FindOneOptions, Repository } from 'typeorm';
-import { UserServiceErrorMessage } from '~common/constants/message/user-service-message.constant';
 import { UserNotFoundError } from '~common/errors/user/user-not-found.error';
 import {
   defaultExcludedKeys,
   getAllColumnKeys,
-  ModelKeys,
+  ModelKeys
 } from '~common/utils/get-all-column-keys.util';
 import {
   createPaginationResponse,
-  appendPagination,
+  appendPagination
 } from '~common/utils/pagination.util';
 import { GetUserListDto } from './dto/get-user-list.dto';
 import { User } from './entities/user.entity';
@@ -38,7 +37,7 @@ export class UserRepository extends Repository<User> {
 
     if (ignoreId) {
       countQuery.andWhere('id != :id', {
-        id: ignoreId,
+        id: ignoreId
       });
     }
 
@@ -48,12 +47,11 @@ export class UserRepository extends Repository<User> {
   async findOneByUserNameOrEmail(input: string): Promise<User> {
     const user = await this.findOne({
       where: [{ username: input }, { email: input }],
-      relations: ['roles', 'roles.permissions'],
-      select: getAllColumnKeys(this, defaultExcludedKeys),
+      // relations: ['roles', 'roles.permissions'],
+      select: getAllColumnKeys(this, defaultExcludedKeys)
     });
 
-    if (!user)
-      throw new NotFoundException(UserServiceErrorMessage.UserNotFound);
+    if (!user) throw new UserNotFoundError();
 
     return user;
   }
@@ -66,7 +64,7 @@ export class UserRepository extends Repository<User> {
       relationFullInfoLoad = false,
       excludeFields = defaultExcludedKeys as ModelKeys<User>,
       includeFields = [],
-      throwIfNotFound = true,
+      throwIfNotFound = true
     }: {
       withDeleted?: boolean;
       relationIdsLoaded?: boolean;
@@ -75,30 +73,30 @@ export class UserRepository extends Repository<User> {
       includeFields?: ModelKeys<User>;
       throwIfNotFound?: boolean;
     } = {
-      throwIfNotFound: true,
+      throwIfNotFound: true
     }
   ): Promise<User> {
     if (!excludeFields.length) excludeFields.push(...defaultExcludedKeys);
 
     const condition: FindOneOptions<User> = {
       where: {
-        id,
+        id
       },
       withDeleted: withDeleted ?? false,
       select: [
         ...includeFields,
-        ...getAllColumnKeys<User>(this, [...excludeFields]),
-      ],
+        ...getAllColumnKeys<User>(this, [...excludeFields])
+      ]
     };
 
     if (relationIdsLoaded) {
       condition.loadRelationIds = {
-        relations: ['roles'],
+        // relations: ['roles']
       };
     }
 
     if (relationFullInfoLoad) {
-      condition.relations = ['roles', 'roles.permissions'];
+      // condition.relations = ['roles', 'roles.permissions'];
     }
 
     const entity = await this.findOne(condition);
@@ -113,31 +111,29 @@ export class UserRepository extends Repository<User> {
   ): Promise<ApiResponseModel<User[]>> {
     const { keyword, roleId, active } = queryParams;
 
-    const query = this.createQueryBuilder('user')
-      .leftJoinAndSelect('user.roles', 'role')
-      .where('user.id IS NOT NULL');
+    const query = this.createQueryBuilder('user').where('user.id IS NOT NULL');
 
     if (keyword) {
       query.andWhere(
         new Brackets((query) => {
           query
             .where('user.username ILIKE :username', {
-              username: `%${keyword}%`,
+              username: `%${keyword}%`
             })
             .orWhere('user.email ILIKE :email', {
-              email: `%${keyword}%`,
+              email: `%${keyword}%`
             })
-            .orWhere('user.name ILIKE :name', { name: `%${keyword}%` })
-            .orWhere('role.roleName ILIKE :roleName', {
-              roleName: `%${keyword}%`,
-            });
+            .orWhere('user.name ILIKE :name', { name: `%${keyword}%` });
+          // .orWhere('role.roleName ILIKE :roleName', {
+          //   roleName: `%${keyword}%`
+          // });
         })
       );
     }
 
-    if (roleId) {
-      query.andWhere('role.id = :roleId', { roleId });
-    }
+    // if (roleId) {
+    //   query.andWhere('role.id = :roleId', { roleId });
+    // }
 
     if (active) {
       query.andWhere('user.active = :active', { active });
@@ -150,7 +146,7 @@ export class UserRepository extends Repository<User> {
     return {
       result,
       pagination: createPaginationResponse(queryParams, count),
-      success: true,
+      success: true
     };
   }
 }

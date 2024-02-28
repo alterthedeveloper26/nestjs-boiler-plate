@@ -4,30 +4,32 @@ import { ConfigType } from '@nestjs/config';
 import { JwtModuleAsyncOptions, JwtModuleOptions } from '@nestjs/jwt';
 import {
   ThrottlerAsyncOptions,
-  ThrottlerModuleOptions,
+  ThrottlerModuleOptions
 } from '@nestjs/throttler';
-import { getEnvNumber } from '~common/utils/env.util';
+import { getEnv, getEnvNumber } from '~common/utils/env.util';
 
 const FIFTEEN_MINUTES = 15 * 60;
 
 export const authConfig = registerAs('authConfig', () => ({
-  saltRounds: process.env.SALT_ROUNDS ? Number(process.env.SALT_ROUNDS) : 10,
-  accessTokenSecret: process.env.JWT_SECRET,
-  accessTokenExpire: process.env.JWT_EXPIRE,
-  maxLoginAttemptPerTime: process.env.MAX_LOGIN_ATTEMPT_PER_TIME
-    ? Number(process.env.MAX_LOGIN_ATTEMPT_PER_TIME)
-    : 5,
-  loginLockTimeInSeconds: process.env.LOGIN_LOCK_TIME_IN_SECONDS
-    ? Number(process.env.LOGIN_LOCK_TIME_IN_SECONDS)
-    : FIFTEEN_MINUTES,
-  extractedJwtPayloadKey: process.env.EXTRACTED_PAYLOAD_KEY
-    ? process.env.EXTRACTED_PAYLOAD_KEY
-    : 'user',
-  refreshTokenSecret: process.env.JWT_REFRESH_SECRET,
-  refreshTokenExpire: process.env.JWT_REFRESH_EXPIRE,
-  tokenFormatVersion: getEnvNumber('TOKEN_FORMAT_VERSION', {
-    default: 0,
+  saltRounds: getEnvNumber('SALT_ROUNDS', {
+    default: 10
   }),
+  accessTokenSecret: getEnv('JWT_SECRET'),
+  accessTokenExpire: getEnv('JWT_EXPIRE'),
+  maxLoginAttemptPerTime: getEnvNumber('MAX_LOGIN_ATTEMPT_PER_TIME', {
+    default: 10
+  }),
+  loginLockTimeInSeconds: getEnvNumber('LOGIN_LOCK_TIME_IN_SECONDS', {
+    default: FIFTEEN_MINUTES
+  }),
+  extractedJwtPayloadKey: getEnv('EXTRACTED_PAYLOAD_KEY', {
+    default: 'user'
+  }),
+  refreshTokenSecret: getEnv('JWT_REFRESH_SECRET'),
+  refreshTokenExpire: getEnv('JWT_REFRESH_EXPIRE'),
+  tokenFormatVersion: getEnvNumber('TOKEN_FORMAT_VERSION', {
+    default: 0
+  })
 }));
 
 export const jwtOptionFactory: JwtModuleAsyncOptions = {
@@ -37,11 +39,11 @@ export const jwtOptionFactory: JwtModuleAsyncOptions = {
     return {
       secret: authConfiguration.accessTokenSecret,
       signOptions: {
-        expiresIn: authConfiguration.accessTokenExpire,
-      },
+        expiresIn: authConfiguration.accessTokenExpire
+      }
     };
   },
-  inject: [authConfig.KEY],
+  inject: [authConfig.KEY]
 };
 
 export const throttlerOptionsFactory: ThrottlerAsyncOptions = {
@@ -52,10 +54,10 @@ export const throttlerOptionsFactory: ThrottlerAsyncOptions = {
       throttlers: [
         {
           ttl: authConfiguration.loginLockTimeInSeconds,
-          limit: authConfiguration.maxLoginAttemptPerTime,
-        },
-      ],
+          limit: authConfiguration.maxLoginAttemptPerTime
+        }
+      ]
     };
   },
-  inject: [authConfig.KEY],
+  inject: [authConfig.KEY]
 };

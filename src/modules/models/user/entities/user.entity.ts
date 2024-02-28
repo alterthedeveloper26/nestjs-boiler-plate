@@ -11,43 +11,43 @@ export class User extends BaseEntity {
   name: string;
 
   @Column({
-    unique: true,
+    unique: true
   })
   username: string;
 
   @Column({
-    select: false,
+    select: false
   })
   password: string;
 
   @Column({
     length: 128,
     nullable: false,
-    unique: true,
+    unique: true
   })
   email: string;
 
   @Column({
     nullable: false,
-    default: 0,
+    default: 0
   })
   failedLoginCount: number;
 
   @Column({
     type: 'timestamptz',
-    default: null,
+    default: null
   })
   lastLoginAttemptTime: Date;
 
   @Column({
     type: 'timestamptz',
     default: null,
-    select: false,
+    select: false
   })
   lastChangePasswordTime: Date;
 
   @Column({
-    default: true,
+    default: true
   })
   active: boolean;
 

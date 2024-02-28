@@ -1,8 +1,8 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { AuthServiceErrorMessage } from '~common/constants/message/auth-service-message.constant';
+import { INVALID_CREDENTIAL } from '~common/constants/messages';
 
 export class WrongCredentialError extends UnauthorizedException {
   constructor() {
-    super(AuthServiceErrorMessage.EMAIL_PASSWORD_INVALID);
+    super(INVALID_CREDENTIAL);
   }
 }

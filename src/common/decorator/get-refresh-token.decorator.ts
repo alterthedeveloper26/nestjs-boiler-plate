@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { REFRESH_TOKEN_HEADER } from '~auth/constant';
+import { REFRESH_TOKEN_HEADER } from '~/modules/authentication/constant';
 
 export const RefreshToken = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): string => {

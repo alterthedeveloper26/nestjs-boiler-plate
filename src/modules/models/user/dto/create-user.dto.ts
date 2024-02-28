@@ -5,18 +5,18 @@ import {
   NAME_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-} from '~common/constants/system';
+  USERNAME_MAX_LENGTH
+} from '~common/constants/validation.constant';
 import { StandardizeString } from '~common/decorator/standardize-string.decorator';
 
 export class CreateUserDto {
   @ApiProperty({
-    type: 'string',
+    type: 'string'
   })
   @MaxLength(NAME_MAX_LENGTH)
   @StandardizeString({})
   @ApiProperty({
-    type: 'string',
+    type: 'string'
   })
   @IsNotEmpty()
   name: string;
@@ -28,7 +28,7 @@ export class CreateUserDto {
   username: string;
 
   @ApiProperty({
-    type: 'string',
+    type: 'string'
   })
   @IsNotEmpty()
   @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
@@ -36,7 +36,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     type: 'string',
-    format: 'email',
+    format: 'email'
   })
   @StandardizeString({ toLowerCase: true })
   @MaxLength(EMAIL_MAX_LENGTH)

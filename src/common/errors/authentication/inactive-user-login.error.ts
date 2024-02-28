@@ -1,8 +1,8 @@
 import { ForbiddenException } from '@nestjs/common';
-import { AuthServiceErrorMessage } from '~common/constants/message/auth-service-message.constant';
+import { INACTIVE_USER_LOGIN } from '~common/constants/messages';
 
 export class InactiveUserLoginError extends ForbiddenException {
   constructor() {
-    super(AuthServiceErrorMessage.INACTIVE_USER_LOGIN);
+    super(INACTIVE_USER_LOGIN);
   }
 }

@@ -7,7 +7,7 @@ import {
   IsNotEmpty,
   IsOptional,
   Length,
-  MaxLength,
+  MaxLength
 } from 'class-validator';
 import { uniq } from 'lodash';
 import {
@@ -15,13 +15,13 @@ import {
   NAME_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-} from '~common/constants/system';
+  USERNAME_MAX_LENGTH
+} from '~common/constants/validation.constant';
 import { StandardizeString } from '~common/decorator/standardize-string.decorator';
 
 export class UpdateUserDto {
   @ApiProperty({
-    type: 'string',
+    type: 'string'
   })
   @IsNotEmpty()
   @MaxLength(NAME_MAX_LENGTH)
@@ -31,7 +31,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     type: 'string',
-    example: 'username',
+    example: 'username'
   })
   @MaxLength(USERNAME_MAX_LENGTH)
   @IsNotEmpty()
@@ -40,7 +40,7 @@ export class UpdateUserDto {
   username?: string;
 
   @ApiProperty({
-    type: 'string',
+    type: 'string'
   })
   @Length(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
   @IsOptional()
@@ -48,7 +48,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     type: 'string',
-    format: 'email',
+    format: 'email'
   })
   @StandardizeString({ toLowerCase: true })
   @IsEmail()
@@ -64,7 +64,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     type: 'boolean',
-    default: true,
+    default: true
   })
   @IsBoolean()
   @IsNotEmpty()

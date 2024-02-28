@@ -10,6 +10,7 @@ import { v4 } from 'uuid';
       middleware: {
         mount: true,
         generateId: true,
+        // NOTE: This enable us to get correlation id by using clsService.getId()
         idGenerator: (req: Request) => {
           const reqId = req.headers[CORRELATION_ID_HEADER] as string;
 
@@ -20,9 +21,9 @@ import { v4 } from 'uuid';
           }
 
           return reqId;
-        },
-      },
-    }),
-  ],
+        }
+      }
+    })
+  ]
 })
 export class AsyncLocalStorageModule {}

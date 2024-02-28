@@ -4,14 +4,14 @@ import {
   DEFAULT_PAGE_NUMBER,
   DEFAULT_PAGE_SIZE,
   DEFAULT_SORT_KEY,
-  PaginationSortingTypeEnum,
-} from '~common/constants/pagination';
+  PaginationSortingTypeEnum
+} from '~common/constants/pagination.constant';
 
 export class BasePaginationRequestDto {
   @ApiProperty({
     type: 'number',
     default: 1,
-    required: false,
+    required: false
   })
   @IsOptional()
   page?: number = DEFAULT_PAGE_NUMBER;
@@ -19,14 +19,14 @@ export class BasePaginationRequestDto {
   @ApiProperty({
     type: 'number',
     default: 10,
-    required: false,
+    required: false
   })
   @IsOptional()
   pageSize?: number = DEFAULT_PAGE_SIZE;
 
   @ApiProperty({
     type: 'string',
-    required: false,
+    required: false
   })
   @IsOptional()
   sortKey?: string = DEFAULT_SORT_KEY;
@@ -35,7 +35,7 @@ export class BasePaginationRequestDto {
     type: 'enum',
     enum: PaginationSortingTypeEnum,
     default: PaginationSortingTypeEnum.DESCENDING,
-    required: false,
+    required: false
   })
   @IsEnum(PaginationSortingTypeEnum)
   @IsOptional()

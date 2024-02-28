@@ -7,7 +7,7 @@ export const AUTH_API_REFRESH_TOKEN_PATH = '/api/auth/refresh';
 export const AUTH_API_REGISTER_PATH = '/register';
 
 export const PASSWORD_API_DEFAULT_PATH = '/password';
-export const RESET_PASSWORD_API_PATH = `/api${PASSWORD_API_DEFAULT_PATH}/reset/:email`;
+export const RESET_PASSWORD_API_PATH = `${PASSWORD_API_DEFAULT_PATH}/reset/:email`;
 
 // Permission
 export const PERMISSION_PATH = '/permission';

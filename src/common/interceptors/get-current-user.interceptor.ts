@@ -2,7 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
-  NestInterceptor,
+  NestInterceptor
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { CURRENT_USER_KEY } from '~common/decorator/get-current-user.decorator';
@@ -20,6 +20,8 @@ export class GetCurrentUserInterceptor implements NestInterceptor {
   ): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
 
+    console.log('LET SEE THE REQUEST');
+
     const token = req.user as TokenPayloadDescription;
 
     if (!token) {
@@ -27,7 +29,7 @@ export class GetCurrentUserInterceptor implements NestInterceptor {
     }
 
     const currentUser = await this.userService.findOne(token.userId, {
-      relationFullInfoLoad: true,
+      relationFullInfoLoad: true
     });
     req[CURRENT_USER_KEY] = currentUser;
 

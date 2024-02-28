@@ -1,10 +1,7 @@
-import { BadRequestException, forwardRef, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { authConfig } from '~/config/auth.config';
-import { UserServiceErrorMessage } from '~common/constants/message/user-service-message.constant';
 import { HashHelper } from '~common/utils/hash.util';
-import { Role } from '~models/role/entities/role.entity';
-import { RoleService } from '~models/role/role.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
@@ -16,18 +13,12 @@ import { UserNotFoundError } from '~common/errors/user/user-not-found.error';
 import { UpdatePersonalInfoDto } from './dto/update-personal-info.dto';
 import { GetUserListDto } from './dto/get-user-list.dto';
 import { WrongCurrentPasswordError } from '~common/errors/authentication/wrong-password-when-change-password.error';
-import { CreateAdminUserEvent } from './event/create-admin-user.event';
-import { EventBusService } from '~shared/event-bus/event-bus.service';
-import { RequestContext } from '~shared/request-context/request.context';
 
 export class UserService {
   constructor(
     @Inject(authConfig.KEY)
     private readonly authConfiguration: ConfigType<typeof authConfig>,
-    private readonly userRepo: UserRepository,
-    private readonly roleService: RoleService,
-    @Inject(forwardRef(() => EventBusService))
-    private readonly eventBusService: EventBusService
+    private readonly userRepo: UserRepository
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<Partial<User>> {
@@ -38,20 +29,15 @@ export class UserService {
       saltRounds
     );
     if (await this.userRepo.isUserNameOrEmailExist(username, email)) {
-      throw new BadRequestException(
-        UserServiceErrorMessage.DuplicateEmailOrUsername
-      );
+      throw new DuplicateCredentialError();
     }
+
     const createdUser = await this.userRepo.save({
       ...createUserDto,
-      password: hashPassword,
+      password: hashPassword
     });
 
-    const createEvent = CreateAdminUserEvent.from(
-      { ...createdUser, password: createUserDto.password },
-      RequestContext?.currentContext()?.getCorrelationId()
-    );
-    this.eventBusService.emit(createEvent, RequestContext?.currentContext());
+    // NOTE: emit an event for noti
 
     return { ...createUserDto, id: createdUser.id };
   }
@@ -67,8 +53,8 @@ export class UserService {
 
   async findOneByUserNameOrEmail(input: string) {
     const user = await this.userRepo.findOne({
-      where: [{ username: input }, { email: input }],
-      relations: ['roles', 'roles.permissions'],
+      where: [{ username: input }, { email: input }]
+      // relations: ['roles', 'roles.permissions']
     });
 
     if (!user) throw new UserNotFoundError();
@@ -84,13 +70,6 @@ export class UserService {
       throw new DuplicateCredentialError();
     }
 
-    if (updateUserDto.roleNames) {
-      const roles: Role[] = <Role[]>(
-        await this.roleService.findManyByName(updateUserDto.roleNames)
-      );
-      user.roles = roles;
-    }
-
     if (updateUserDto.password) {
       const saltRounds = this.authConfiguration.saltRounds;
       user.password = await HashHelper.hash(updateUserDto.password, saltRounds);
@@ -103,7 +82,7 @@ export class UserService {
   async updatePersonalInfo(user: User, dto: UpdatePersonalInfoDto) {
     return await this.userRepo.update(
       {
-        id: user.id,
+        id: user.id
       },
       dto
     );

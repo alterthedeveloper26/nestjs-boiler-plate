@@ -1,8 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { AuthServiceErrorMessage } from '~common/constants/message/auth-service-message.constant';
+import { HAVE_NOT_GET_INFO_FROM_TOKEN } from '~common/constants/messages';
 
 export class HaveNotDecodedTokenError extends InternalServerErrorException {
   constructor() {
-    super(AuthServiceErrorMessage.HAVE_NOT_DECODED_TOKEN);
+    super(HAVE_NOT_GET_INFO_FROM_TOKEN);
   }
 }

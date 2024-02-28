@@ -1,8 +1,7 @@
 import { ForbiddenException } from '@nestjs/common';
-import { AuthServiceErrorMessage } from '~common/constants/message/auth-service-message.constant';
-
+import { PASSWORD_NOT_CHANGED } from '~common/constants/messages';
 export class HaveNotChangePasswordError extends ForbiddenException {
   constructor() {
-    super(AuthServiceErrorMessage.PASSWORD_NOT_CHANGED);
+    super(PASSWORD_NOT_CHANGED);
   }
 }

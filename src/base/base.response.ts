@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-import { BasePaginationResponse } from '~base/base-pagination.response';
+import { BasePaginationResponseDto } from './dto/base-pagination-response.dto';
 
 export class ApiResponseModel<T = unknown> {
   @ApiProperty()
@@ -21,8 +20,8 @@ export class ApiResponseModel<T = unknown> {
   responseCode?: number;
 
   @ApiProperty({
-    type: BasePaginationResponse,
+    type: BasePaginationResponseDto,
     required: false
   })
-  pagination?: BasePaginationResponse;
+  pagination?: BasePaginationResponseDto;
 }

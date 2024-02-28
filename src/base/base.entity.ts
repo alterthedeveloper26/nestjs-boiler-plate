@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 
 export class BaseEntity {
@@ -13,39 +13,38 @@ export class BaseEntity {
   @CreateDateColumn({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
-    select: false,
+    select: false
   })
   createdAt: Date;
 
   @Column({
     nullable: true,
-    select: false,
+    select: false
   })
   createdBy?: string;
 
   @UpdateDateColumn({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
-    select: false,
+    select: false
   })
   modifiedAt: Date;
 
   @Column({
     nullable: true,
-    select: false,
+    select: false
   })
   modifiedBy?: string;
 
   @DeleteDateColumn({
     type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-    select: false,
+    select: false
   })
   deletedAt: Date;
 
   @Column({
     nullable: true,
-    select: false,
+    select: false
   })
   deletedBy?: string;
 }

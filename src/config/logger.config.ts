@@ -1,16 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { LoggerOptions, transports } from 'winston';
-import { SyslogTransportOptions } from 'winston-syslog';
 import { PRODUCTION } from '~common/constants/system';
-
-// export const options: SyslogTransportOptions = {
-//   protocol: 'tls4',
-//   host: papertrailConfig.host,
-//   port: papertrailConfig.port,
-//   app_name: papertrailConfig.appName,
-//   localhost: `${serviceName}-${environment}`,
-//   eol: '\n',
-// };
 
 export const loggerOptions = {
   useFactory: (configService: ConfigService): LoggerOptions => {
@@ -19,8 +9,8 @@ export const loggerOptions = {
 
     return {
       level,
-      transports: [new transports.Console()],
+      transports: [new transports.Console()]
     };
   },
-  inject: [ConfigService],
+  inject: [ConfigService]
 };

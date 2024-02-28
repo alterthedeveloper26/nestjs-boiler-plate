@@ -8,13 +8,13 @@ import {
   Inject,
   Injectable,
   Logger,
-  NestInterceptor,
+  NestInterceptor
 } from '@nestjs/common';
 
 import { v4 } from 'uuid';
 import { ConfigType } from '@nestjs/config';
 import { CORRELATION_ID_HEADER } from '~common/constants/system';
-import appConfig from '~/config/app.config';
+import { appConfig } from '~/config/app.config';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -33,14 +33,14 @@ export class LoggingInterceptor implements NestInterceptor {
       serviceName: this.appConfiguration.serviceName,
       fromIp: req.ip,
       method: req.method,
-      receivedAt,
+      receivedAt
     };
 
     req.requestInfo = requestInfo;
     Logger.log(`Attempting to call API - ${requestPath}`, {
       hostName: hostname(),
       requestInfo,
-      ...req.body,
+      ...req.body
     });
 
     return next.handle().pipe(
@@ -48,7 +48,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const responseAt = new Date().getTime();
         Logger.log(requestPath, {
           ...requestInfo,
-          durations: responseAt - receivedAt,
+          durations: responseAt - receivedAt
         });
       })
     );

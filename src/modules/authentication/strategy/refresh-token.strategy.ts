@@ -21,7 +21,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromHeader(REFRESH_TOKEN_HEADER),
       ignoreExpiration: false,
-      secretOrKey: authConfiguration.refreshTokenSecret,
+      secretOrKey: authConfiguration.refreshTokenSecret
     });
   }
 
@@ -29,7 +29,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   //attach it as a property on the Request object
   async validate(payload: TokenPayloadDescription) {
     return await this.userService.findOne(payload.userId, {
-      relationFullInfoLoad: true,
+      relationFullInfoLoad: true
     });
   }
 }

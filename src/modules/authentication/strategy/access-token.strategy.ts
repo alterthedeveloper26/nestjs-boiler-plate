@@ -14,10 +14,14 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy) {
     private authConfiguration: ConfigType<typeof authConfig>,
     private userService: UserService
   ) {
+    console.log(
+      '--------------WHAT--------------: ',
+      authConfiguration.accessTokenSecret
+    );
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: authConfiguration.accessTokenSecret,
+      secretOrKey: authConfiguration.accessTokenSecret
     });
   }
 

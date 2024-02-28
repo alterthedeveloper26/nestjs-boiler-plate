@@ -1,13 +1,13 @@
 import {
   BadRequestException,
   ExecutionContext,
-  Injectable,
+  Injectable
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { validateSync } from 'class-validator';
-import flattenDeep from 'lodash.flattendeep';
-import { CredentialDto } from '~auth/dto/credential.dto';
+import { flattenDeep } from 'lodash';
 import { WrongCredentialError } from '~common/errors/authentication/wrong-credential.error';
+import { CredentialReqDto } from '../dto/request/credential.request.dto';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
@@ -20,7 +20,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
     const request = context.switchToHttp().getRequest();
     const { email, password } = request.body;
 
-    const credentialDto = new CredentialDto();
+    const credentialDto = new CredentialReqDto();
     credentialDto.email = email ? email.trim() : '';
     credentialDto.password = password;
 

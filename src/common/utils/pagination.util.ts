@@ -1,7 +1,7 @@
 import { SelectQueryBuilder } from 'typeorm';
-import { BasePaginationRequestDto } from '~base/base-pagination-request.dto';
-import { BasePaginationResponseDto } from '~base/base-pagination-response.dto';
-import { PaginationSortingTypeEnum } from '~common/constants/pagination';
+import { BasePaginationRequestDto } from '~base/dto/base-pagination-request.dto';
+import { BasePaginationResponseDto } from '~base/dto/base-pagination-response.dto';
+import { PaginationSortingTypeEnum } from '~common/constants/pagination.constant';
 
 /**
  * Generate TypeORM pagination
@@ -12,7 +12,7 @@ export const generatePagination = ({
   sortKey,
   sortType,
   page,
-  pageSize,
+  pageSize
 }: BasePaginationRequestDto): {
   order: Record<string, unknown>;
   take: number;
@@ -22,11 +22,11 @@ export const generatePagination = ({
     sortKey && sortKey != 'modifiedAt'
       ? {
           [sortKey]: sortType,
-          ['modifiedAt']: PaginationSortingTypeEnum.DESCENDING,
+          ['modifiedAt']: PaginationSortingTypeEnum.DESCENDING
         }
       : { ['modifiedAt']: sortType },
   take: pageSize,
-  skip: page * pageSize - pageSize,
+  skip: page * pageSize - pageSize
 });
 
 export function createPaginationResponse(
@@ -40,7 +40,7 @@ export function createPaginationResponse(
     sortKey,
     sortType,
     total,
-    totalPages: Math.ceil(total / pageSize),
+    totalPages: Math.ceil(total / pageSize)
   };
 }
 

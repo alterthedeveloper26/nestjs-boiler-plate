@@ -6,9 +6,9 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
   UnprocessableEntityException,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
-import { ApiResponseModel } from '~base/api-response-model.dto';
+import { ApiResponseModel } from '~base/base.response';
 
 export class ResponseParser {
   public static parseError(err: AxiosError<ApiResponseModel>): Error {

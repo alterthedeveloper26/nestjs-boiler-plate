@@ -1,22 +1,36 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigType, registerAs } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { LoggerOptions } from 'typeorm';
+import { getEnv, getEnvBoolean, getEnvNumber } from '~common/utils/env.util';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-export const connectionOptions = {
-  imports: [ConfigModule],
-  useFactory: async (configService: ConfigService) => {
+export const databaseConfig = registerAs(
+  'databaseConfig',
+  (): TypeOrmModuleOptions => {
     return {
-      type: configService.get<string>('DB_TYPE') as 'postgres',
-      host: configService.get<string>('DB_HOST'),
-      port: configService.get<number>('DB_PORT'),
-      username: configService.get<string>('DB_USERNAME'),
-      password: configService.get<string>('DB_PASSWORD'),
-      database: configService.get<string>('DB_NAME'),
+      type: getEnv('DB_TYPE') as 'postgres',
+      host: getEnv('DB_HOST'),
+      port: getEnvNumber('DB_PORT'),
+      username: getEnv('DB_USERNAME'),
+      password: getEnv('DB_PASSWORD'),
+      database: getEnv('DB_NAME'),
       autoLoadEntities: true,
       synchronize: false,
       namingStrategy: new SnakeNamingStrategy(),
-
-      //   authSource: configService.get<string>('DB_AUTH_SOURCE'),
+      logging: getEnvBoolean('DB_LOG_QUERY'),
+      entities: ['dist/modules/**/*.entity.js'],
+      migrationsTableName: 'migration_histories',
+      ssl: getEnvBoolean('DB_SSL')
     };
+  }
+);
+
+export const connectionOptions = {
+  useFactory: async (
+    databaseConfiguration: ConfigType<typeof databaseConfig>
+  ) => {
+    console.log('--------------------: ', databaseConfiguration);
+    return databaseConfiguration;
   },
-  inject: [ConfigService],
+  inject: [databaseConfig.KEY]
 };

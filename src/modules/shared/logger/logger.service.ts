@@ -2,15 +2,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { Logger } from 'winston';
-import { getCorrelationId } from '~common/utils/get-correlation-id.utils';
 
 import {
   CommonInfo,
   EventInfo,
-  RequestInfo,
+  RequestInfo
 } from '~shared/logger/log-info-type.interface';
 import { ArgumentsHost } from '@nestjs/common/interfaces';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class LoggerService {
@@ -23,16 +23,17 @@ export class LoggerService {
     'token',
     'newPassword',
     'currentPassword',
-    'documentNumber',
+    'documentNumber'
   ];
 
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER)
     private readonly loggerInstance: Logger,
     private readonly configService: ConfigService,
+    private readonly cls: ClsService
   ) {
     this.serviceMarkedPrefixMessage = `[${this.configService.get<string>(
-      'serviceName',
+      'serviceName'
     )}] - `;
   }
 
@@ -40,10 +41,10 @@ export class LoggerService {
   public requestInfo(
     argumentHost: ArgumentsHost,
     prefix: string,
-    data: RequestInfo = { correlationId: getCorrelationId(argumentHost) },
+    data: RequestInfo = { correlationId: this.cls.getId() }
   ): void {
     if (!data.correlationId) {
-      data.correlationId = getCorrelationId(argumentHost);
+      data.correlationId = this.cls.getId();
     }
     data.data = this.hideSensitive(data.data);
     this.loggerInstance.info(this.serviceMarkedPrefixMessage + prefix, data);
@@ -53,10 +54,10 @@ export class LoggerService {
   public eventInfo(
     argumentHost: ArgumentsHost,
     prefix: string,
-    data: EventInfo = { correlationId: getCorrelationId(argumentHost) },
+    data: EventInfo = { correlationId: this.cls.getId() }
   ): void {
     if (!data.correlationId) {
-      data.correlationId = getCorrelationId(argumentHost);
+      data.correlationId = this.cls.getId();
     }
     data.data = this.hideSensitive(data.data);
     this.loggerInstance.info(this.serviceMarkedPrefixMessage + prefix, data);
@@ -67,17 +68,17 @@ export class LoggerService {
     argumentHost: ArgumentsHost,
     prefix: string,
     optionalParams: CommonInfo = {
-      correlationId: getCorrelationId(argumentHost),
-    },
+      correlationId: this.cls.getId()
+    }
   ): void {
     // console.log(optionalParams);
 
     if (!optionalParams.correlationId) {
-      optionalParams.correlationId = getCorrelationId(argumentHost);
+      optionalParams.correlationId = this.cls.getId();
     }
     this.loggerInstance.info(
       this.serviceMarkedPrefixMessage + prefix,
-      this.hideSensitive(optionalParams),
+      this.hideSensitive(optionalParams)
     );
   }
 
@@ -86,15 +87,15 @@ export class LoggerService {
     argumentHost: ArgumentsHost,
     prefix: string,
     optionalParams: CommonInfo = {
-      correlationId: getCorrelationId(argumentHost),
-    },
+      correlationId: this.cls.getId()
+    }
   ): void {
     if (!optionalParams.correlationId) {
-      optionalParams.correlationId = getCorrelationId(argumentHost);
+      optionalParams.correlationId = this.cls.getId();
     }
     this.loggerInstance.debug(
       this.serviceMarkedPrefixMessage + prefix,
-      this.hideSensitive(optionalParams),
+      this.hideSensitive(optionalParams)
     );
   }
 
@@ -104,18 +105,18 @@ export class LoggerService {
     prefix: string,
     error: Error,
     optionalParams: CommonInfo = {
-      correlationId: getCorrelationId(argumentHost),
-    },
+      correlationId: this.cls.getId()
+    }
   ): void {
     const wrappedError = this.parseError(error);
 
     if (!optionalParams.correlationId) {
-      optionalParams.correlationId = getCorrelationId(argumentHost);
+      optionalParams.correlationId = this.cls.getId();
     }
     this.loggerInstance.error(this.serviceMarkedPrefixMessage + prefix, {
       message: wrappedError.message,
       stack: wrappedError.stack,
-      ...this.hideSensitive(optionalParams),
+      ...this.hideSensitive(optionalParams)
     });
   }
 
@@ -124,15 +125,15 @@ export class LoggerService {
     argumentHost: ArgumentsHost,
     prefix: string,
     optionalParams: CommonInfo = {
-      correlationId: getCorrelationId(argumentHost),
-    },
+      correlationId: this.cls.getId()
+    }
   ): void {
     if (!optionalParams.correlationId) {
-      optionalParams.correlationId = getCorrelationId(argumentHost);
+      optionalParams.correlationId = this.cls.getId();
     }
     this.loggerInstance.warn(
       this.serviceMarkedPrefixMessage + prefix,
-      optionalParams,
+      optionalParams
     );
   }
 
@@ -145,7 +146,7 @@ export class LoggerService {
   }
 
   private hideSensitive(
-    data: Record<string, unknown> = {},
+    data: Record<string, unknown> = {}
   ): Record<string, unknown> {
     Object.keys(data).forEach((key) => {
       if (LoggerService.SENSITIVE_FIELDS.includes(key)) {
