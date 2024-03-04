@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { TokenPayloadDescription } from '~common/types/token-payload';
+import { TokenPayloadDescription } from '~common/interfaces/token-payload';
 
 export const SessionToken = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): TokenPayloadDescription => {

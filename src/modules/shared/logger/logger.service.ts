@@ -3,14 +3,14 @@ import { ConfigService } from '@nestjs/config';
 
 import { Logger } from 'winston';
 
+import { ArgumentsHost } from '@nestjs/common/interfaces';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ClsService } from 'nestjs-cls';
 import {
   CommonInfo,
   EventInfo,
   RequestInfo
 } from '~shared/logger/log-info-type.interface';
-import { ArgumentsHost } from '@nestjs/common/interfaces';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class LoggerService {
@@ -71,8 +71,6 @@ export class LoggerService {
       correlationId: this.cls.getId()
     }
   ): void {
-    // console.log(optionalParams);
-
     if (!optionalParams.correlationId) {
       optionalParams.correlationId = this.cls.getId();
     }
@@ -152,7 +150,7 @@ export class LoggerService {
       if (LoggerService.SENSITIVE_FIELDS.includes(key)) {
         data[key] = '**Censored**';
       }
-      //To Refactor: Nested data?
+      // To Refactor: Nested data?
       if (key === 'data') {
         data[key] = this.hideSensitive(data[key] as Record<string, unknown>);
       }

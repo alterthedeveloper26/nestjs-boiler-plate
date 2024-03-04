@@ -1,11 +1,12 @@
 import { HttpStatus, Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { connectionOptions, databaseConfig } from './config/database.config';
 import { WinstonModule } from 'nest-winston';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { connectionOptions, databaseConfig } from './config/database.config';
 import { LoggerModule } from '~shared/logger/logger.module';
 import { HealthModule } from './modules/health/health.module';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ExceptionsFilter } from '~common/filters/exception.filter';
 import { LoggingInterceptor } from '~common/interceptors/logging.interceptor';
 import { FormatHttpResponseInterceptor } from '~common/interceptors/format-http-response.interceptor';
@@ -15,7 +16,6 @@ import { AuthModule } from './modules/authentication/authentication.module';
 import { ModelsModule } from '~models/models.module';
 import { appConfig } from './config/app.config';
 import { authConfig, throttlerOptionsFactory } from './config/auth.config';
-import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -43,13 +43,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
     },
     {
       provide: APP_PIPE,
-      useFactory: () => {
-        return new ValidationPipe({
+      useFactory: () =>
+        new ValidationPipe({
           whitelist: true,
           transform: true,
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-        });
-      }
+        })
     },
     {
       provide: APP_FILTER,

@@ -1,5 +1,5 @@
 import { hash, compare } from 'bcrypt';
-import { password } from '~common/types';
+import { password } from '~common/interfaces';
 
 export class HashHelper {
   static async hash(password: string, saltRounds: number): Promise<string> {

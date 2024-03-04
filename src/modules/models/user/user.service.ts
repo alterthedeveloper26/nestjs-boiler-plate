@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { authConfig } from '~/config/auth.config';
 import { HashHelper } from '~common/utils/hash.util';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -8,7 +9,6 @@ import { UserRepository } from './user.repository';
 import { User } from './entities/user.entity';
 import { DuplicateCredentialError } from '~common/errors/user/duplicate-credential.error';
 import { ModelKeys } from '~common/utils/get-all-column-keys.util';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { UserNotFoundError } from '~common/errors/user/user-not-found.error';
 import { UpdatePersonalInfoDto } from './dto/update-personal-info.dto';
 import { GetUserListDto } from './dto/get-user-list.dto';
@@ -23,7 +23,7 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<Partial<User>> {
     const { username, email } = createUserDto;
-    const saltRounds = this.authConfiguration.saltRounds;
+    const { saltRounds } = this.authConfiguration;
     const hashPassword = await HashHelper.hash(
       createUserDto.password,
       saltRounds
@@ -43,7 +43,7 @@ export class UserService {
   }
 
   async findAll(getUserListDto: GetUserListDto) {
-    return await this.userRepo.findAndPaginateWithCondition(getUserListDto);
+    return this.userRepo.findAndPaginateWithCondition(getUserListDto);
   }
 
   async getUserLastChangePasswordTime(id: string): Promise<Date> {
@@ -71,16 +71,16 @@ export class UserService {
     }
 
     if (updateUserDto.password) {
-      const saltRounds = this.authConfiguration.saltRounds;
+      const { saltRounds } = this.authConfiguration;
       user.password = await HashHelper.hash(updateUserDto.password, saltRounds);
       delete updateUserDto.password;
     }
 
-    return await this.userRepo.save({ ...user, ...updateUserDto });
+    return this.userRepo.save({ ...user, ...updateUserDto });
   }
 
   async updatePersonalInfo(user: User, dto: UpdatePersonalInfoDto) {
-    return await this.userRepo.update(
+    return this.userRepo.update(
       {
         id: user.id
       },
@@ -99,22 +99,22 @@ export class UserService {
       throwIfNotFound?: boolean;
     } = {}
   ): Promise<User> {
-    return await this.userRepo.findAnUserById(id, queryOptions);
+    return this.userRepo.findAnUserById(id, queryOptions);
   }
 
   async delete(id: string): Promise<DeleteResult> {
     await this.userRepo.findAnUserById(id);
-    return await this.userRepo.delete(id);
+    return this.userRepo.delete(id);
   }
 
   async softDelete(id: string): Promise<UpdateResult> {
     await this.userRepo.findAnUserById(id);
-    return await this.userRepo.softDelete(id);
+    return this.userRepo.softDelete(id);
   }
 
   async restore(id: string): Promise<UpdateResult> {
     await this.userRepo.findAnUserById(id, { withDeleted: true });
-    return await this.userRepo.restore(id);
+    return this.userRepo.restore(id);
   }
 
   async changePassword(
@@ -134,12 +134,12 @@ export class UserService {
     newPassword: string,
     isSystemChanged = false
   ) {
-    const saltRounds = this.authConfiguration.saltRounds;
+    const { saltRounds } = this.authConfiguration;
     await user.setPassword(newPassword, saltRounds, isSystemChanged);
     await this.userRepo.save(user);
   }
 
   async findUserByUserNameOrEmail(input: string): Promise<User> {
-    return await this.userRepo.findOneByUserNameOrEmail(input);
+    return this.userRepo.findOneByUserNameOrEmail(input);
   }
 }

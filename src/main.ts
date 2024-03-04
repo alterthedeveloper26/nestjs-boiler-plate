@@ -1,9 +1,9 @@
 import { Logger, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as nocache from 'nocache';
+import { AppModule } from './app.module';
 import { SwaggerSetup } from './swagger';
 
 async function bootstrap() {

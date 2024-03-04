@@ -7,7 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { CURRENT_USER_KEY } from '~common/decorator/get-current-user.decorator';
 import { HaveNotDecodedTokenError } from '~common/errors/authentication/have-not-decoded-token.error';
-import { TokenPayloadDescription } from '~common/types/token-payload';
+import { TokenPayloadDescription } from '~common/interfaces/token-payload';
 import { UserService } from '~models/user/user.service';
 
 @Injectable()
@@ -17,10 +17,8 @@ export class GetCurrentUserInterceptor implements NestInterceptor {
   async intercept(
     context: ExecutionContext,
     next: CallHandler
-  ): Promise<Observable<any>> {
+  ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
-
-    console.log('LET SEE THE REQUEST');
 
     const token = req.user as TokenPayloadDescription;
 
